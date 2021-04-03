@@ -1,19 +1,47 @@
+$(document).ready(function () {
+    let timeContainer = $("#timeContainer");
+    let timeContainerHTML = ""; 0
 
+    let now = moment();
 
-let timeContainer = $("#timeContainer");
-let timeContainerHTML = "";
+    for (let i = 8; i <= 23; i++) {
+        let displayTime = i;
+        if (i > 12) {
+            displayTime = i - 12;
+        }
 
-for (let i = 8; i <= 12; i++) {
-    timeContainerHTML = timeContainerHTML + `
-    <div class="row">
-		<div class="col-md-1 hour pt-4">${i}AM</div>
-			<input id="8Row" class="user-event-input col-md-10 event-input-block">
-		<div class="col-md-1 saveBtn" data-hour=${i}><i class="fas fa-lock" aria-hidden="true"></i></div>
-  	</div>	
-	`;
-}
-timeContainer.html("<p>Hi</p>");
+        let relativeTime = "";
+        if (i == now.hour()) {
+            relativeTime = "present";
+        } else if (i < now.hour()) {
+            relativeTime = "past";
+        } else {
+            relativeTime = "future";
+        }
 
+        timeContainerHTML = timeContainerHTML + `
+		<div class="row">
+			<div class="col-md-1 hour pt-4 ${relativeTime}">${displayTime}${i < 12 ? "AM" : "PM"}</div>
+				<input id="${i}Row" class="user-event-input col-md-10 event-input-block">
+			<div class="col-md-1 saveBtn" data-hour=${displayTime} id="button${i}"><i class="fas fa-lock" aria-hidden="true"></i></div>
+		</div>	
+		`;
+    }
+
+    timeContainer.html(timeContainerHTML);
+
+    let currentTimeDisplay = `
+	<div class ="row justify-content-center">
+    	<h1>The current date and time is: ${now.format('LLL')} </h1>
+	</div>`;
+    $("#currentTimeDisplay").html(currentTimeDisplay);
+
+    for (let i = 8; i <= 23; i++) {
+        $(`#button${i}`).click(() => {
+            Cookies.set(`inputInfo${i}`, $(`${i}Row`).val());
+        });
+    }
+});
 /**
 // declare the variables
 let LockButton = $(".LockButton");
